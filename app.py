@@ -31,14 +31,22 @@ if st.button("Predict"):
     encoded_df = pd.DataFrame(encoded, columns=encoder.get_feature_names_out())
 
     numeric_df = pd.DataFrame([{
-        'AGE':                   age,
-        'TECH_COMFORT_SCORE':    tech_comfort_score,
-        'NUM_SESSIONS':          0,
+        'AGE':                    age,
+        'TECH_COMFORT_SCORE':     tech_comfort_score,
+        'NUM_SESSIONS':           0,
         'TOTAL_SESSION_DURATION': 0,
-        'NUM_ACTIVE_DAYS':       0,
+        'NUM_ACTIVE_DAYS':        0,
     }])
 
-    input_df = pd.concat([numeric_df, encoded_df], axis=1)
+    input_df = pd.concat([numeric_df.reset_index(drop=True),
+                          encoded_df.reset_index(drop=True)], axis=1)
+    
+    # Match exact training column order
+    expected_cols = ['AGE', 'TECH_COMFORT_SCORE', 'NUM_SESSIONS', 
+                     'TOTAL_SESSION_DURATION', 'NUM_ACTIVE_DAYS'] + \
+                    list(encoder.get_feature_names_out())
+    input_df = input_df[expected_cols]
+
     probability = model.predict_proba(input_df)[0][1]
     risk = "Low" if probability >= 0.6 else "Medium" if probability >= 0.4 else "High"
 
