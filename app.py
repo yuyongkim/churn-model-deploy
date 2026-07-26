@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
+import os
+
+# Set working directory to script location
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # Load model and encoder
 with open("churn_rf_healthy_meals.pkl", "rb") as f:
